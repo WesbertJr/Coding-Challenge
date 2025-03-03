@@ -34,30 +34,6 @@ public class Employee extends RepresentationModel<Employee> {
     @JsonProperty("employee_email")
     private String email;
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setSalary(Integer salary) {
-        this.salary = salary;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     @Override
     public String toString() {
         return "Employee{" + "id='"

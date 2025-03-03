@@ -48,6 +48,9 @@ public class EmployeControllerImpl implements IEmployeeController<Employee, Empl
     @Override
     public ResponseEntity<Employee> getEmployeeById(@Valid @PathVariable String id) {
         Employee employee = employeeService.findById(id);
+        if (employee == null) {
+            throw new EmployeeNotFoundException("Employee with id " + id + " not found.");
+        }
         addLinks(employee);
         return new ResponseEntity<>(employee, HttpStatus.OK);
     }

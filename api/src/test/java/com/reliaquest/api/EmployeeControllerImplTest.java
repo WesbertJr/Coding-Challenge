@@ -170,14 +170,13 @@ public class EmployeeControllerImplTest {
         Mockito.when(employeeService.findAll()).thenReturn(empytEmployeeList);
 
         mockMvc.perform(get(API_END_POINT + "/highestSalary"))
-                        .andExpect(status().isNotFound())
-                        .andExpect(result -> {
-                            Exception exception = result.getResolvedException();
-                            assertNotNull(exception);
-                            assertInstanceOf(EmployeeException.class, exception);
-                        })
-                        .andDo(print());
-
+                .andExpect(status().isNotFound())
+                .andExpect(result -> {
+                    Exception exception = result.getResolvedException();
+                    assertNotNull(exception);
+                    assertInstanceOf(EmployeeException.class, exception);
+                })
+                .andDo(print());
     }
 
     @Test

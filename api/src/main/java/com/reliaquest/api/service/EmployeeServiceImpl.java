@@ -9,6 +9,8 @@ import com.reliaquest.api.dto.EmployeeRequest;
 import com.reliaquest.api.exception.EmployeeException;
 import java.util.List;
 import java.util.Objects;
+
+import com.reliaquest.api.exception.EmployeeNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -45,13 +47,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Cacheable("employees")
     public Employee findById(String id) {
-        String json = restClient.get().uri("/employee/" + id).retrieve().body(String.class);
         try {
+        String json = restClient.get().uri("/employee/" + id).retrieve().body(String.class);
             Employee employee = mapper.treeToValue(mapper.readTree(json).path("data"), Employee.class);
             log.info("fetched: {}", employee);
             return employee;
-        } catch (JsonProcessingException e) {
-            throw new EmployeeException("Error processing JSON: " + e.getMessage());
+        } catch (Exception e) {
+            throw new EmployeeNotFoundException(id);
         }
     }
 

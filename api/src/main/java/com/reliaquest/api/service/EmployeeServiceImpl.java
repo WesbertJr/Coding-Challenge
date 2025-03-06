@@ -59,11 +59,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @CacheEvict(value = "employees", allEntries = true)
     public Employee create(EmployeeRequest request) {
+        ObjectNode json = mapper.createObjectNode();
+        json.put("name", request.getName());
+        json.put("age", request.getAge());
+        json.put("salary", request.getSalary());
+        json.put("title", request.getTitle());
+
         String payload = restClient
                 .method(HttpMethod.POST)
                 .uri("/employee")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(request)
+                .body(json)
                 .retrieve()
                 .body(String.class);
         try {

@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.hateoas.Link;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -132,7 +131,6 @@ public class EmployeeControllerImplTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(filteredEmployee.getId()))
                 .andExpect(jsonPath("$.employee_name").value(filteredEmployee.getName()))
-                .andExpect(jsonPath("$._links").exists())
                 .andDo(print());
     }
 
@@ -253,7 +251,6 @@ public class EmployeeControllerImplTest {
         createdEmployee.setSalary(45832);
         createdEmployee.setTitle("Insurance Agent");
         createdEmployee.setEmail("test@test.com");
-        addLinks(createdEmployee);
 
         Mockito.when(employeeService.create(employeeRequest)).thenReturn(createdEmployee);
 
@@ -291,46 +288,5 @@ public class EmployeeControllerImplTest {
                     assertInstanceOf(EmployeeNotFoundException.class, exception);
                 })
                 .andDo(print());
-    }
-
-    @Test
-    public void testAddLinks_ShouldAddAllExpectedLinks() {
-        Employee employee = new Employee();
-        employee.setName("William");
-        employee.setAge(27);
-        employee.setSalary(45832);
-        employee.setTitle("Insurance Agent");
-        employee.setEmail("test@test.com");
-        employee.setId(UUID.randomUUID().toString());
-
-        addLinks(employee);
-        List<Link> links = employee.getLinks().toList();
-
-        assertTrue(links.stream().anyMatch(link -> link.getRel().value().equals("deleteById")));
-        assertTrue(links.stream().anyMatch(link -> link.getRel().value().equals("searchByName")));
-        assertTrue(links.stream().anyMatch(link -> link.getRel().value().equals("getEmployeeWithHighestSalary")));
-        assertTrue(links.stream().anyMatch(link -> link.getRel().value().equals("getTopTenHighestSalaryOfEmployees")));
-    }
-
-    void addLinks(Employee employee) {
-        if (employee.getLinks().stream().noneMatch(link -> link.getRel().value().equals("deleteById"))) {
-            employee.add(
-                    Link.of(ApiEndpoints.BASE_URL.getUrl() + employee.getId()).withRel("deleteById"));
-        }
-        if (employee.getLinks().stream().noneMatch(link -> link.getRel().value().equals("searchByName"))) {
-            String name = employee.getName().split(" ")[0];
-            employee.add(
-                    Link.of(ApiEndpoints.BASE_URL.getUrl() + "search/" + name).withRel("searchByName"));
-        }
-        if (employee.getLinks().stream()
-                .noneMatch(link -> link.getRel().value().equals("getEmployeeWithHighestSalary"))) {
-            employee.add(
-                    Link.of(ApiEndpoints.BASE_URL.getUrl() + "highestSalary").withRel("getEmployeeWithHighestSalary"));
-        }
-        if (employee.getLinks().stream()
-                .noneMatch(link -> link.getRel().value().equals("getTopTenHighestSalaryOfEmployees"))) {
-            employee.add(Link.of(ApiEndpoints.BASE_URL.getUrl() + "topTenHighestEarningEmployeeNames")
-                    .withRel("getTopTenHighestSalaryOfEmployees"));
-        }
     }
 }

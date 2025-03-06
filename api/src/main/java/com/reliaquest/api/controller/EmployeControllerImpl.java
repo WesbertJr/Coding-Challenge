@@ -1,7 +1,6 @@
 package com.reliaquest.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.reliaquest.api.ApiEndpoints;
 import com.reliaquest.api.dto.Employee;
 import com.reliaquest.api.dto.EmployeeRequest;
 import com.reliaquest.api.exception.EmployeeException;
@@ -12,7 +11,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +28,6 @@ public class EmployeControllerImpl implements IEmployeeController<Employee, Empl
     @Override
     public ResponseEntity<List<Employee>> getAllEmployees() {
         List<Employee> employees = employeeService.findAll();
-        employees.forEach(this::addLinks);
         return new ResponseEntity<>(employeeService.findAll(), HttpStatus.OK);
     }
 
@@ -51,7 +48,6 @@ public class EmployeControllerImpl implements IEmployeeController<Employee, Empl
         if (employee == null) {
             throw new EmployeeNotFoundException("Employee with id " + id + " not found.");
         }
-        addLinks(employee);
         return new ResponseEntity<>(employee, HttpStatus.OK);
     }
 
@@ -88,10 +84,6 @@ public class EmployeControllerImpl implements IEmployeeController<Employee, Empl
             return new ResponseEntity<>(employeeOpt.get(), HttpStatus.ALREADY_REPORTED);
         }
         Employee createdEmployee = employeeService.create(employeeInput);
-        createdEmployee.add(Link.of(ApiEndpoints.BASE_URL.getUrl() + createdEmployee.getId())
-                .withRel("getById"));
-        createdEmployee.add(Link.of(ApiEndpoints.BASE_URL.getUrl() + "search/" + createdEmployee.getName())
-                .withRel("searchByName"));
         return new ResponseEntity<>(createdEmployee, HttpStatus.CREATED);
     }
 
@@ -102,27 +94,5 @@ public class EmployeControllerImpl implements IEmployeeController<Employee, Empl
                 .findFirst()
                 .orElseThrow(() -> new EmployeeNotFoundException(id));
         return new ResponseEntity<>(employeeService.delete(employee), HttpStatus.ACCEPTED);
-    }
-
-    private void addLinks(Employee employee) {
-        if (employee.getLinks().stream().noneMatch(link -> link.getRel().value().equals("deleteById"))) {
-            employee.add(
-                    Link.of(ApiEndpoints.BASE_URL.getUrl() + employee.getId()).withRel("deleteById"));
-        }
-        if (employee.getLinks().stream().noneMatch(link -> link.getRel().value().equals("searchByName"))) {
-            String name = employee.getName().split(" ")[0];
-            employee.add(
-                    Link.of(ApiEndpoints.BASE_URL.getUrl() + "search/" + name).withRel("searchByName"));
-        }
-        if (employee.getLinks().stream()
-                .noneMatch(link -> link.getRel().value().equals("getEmployeeWithHighestSalary"))) {
-            employee.add(
-                    Link.of(ApiEndpoints.BASE_URL.getUrl() + "highestSalary").withRel("getEmployeeWithHighestSalary"));
-        }
-        if (employee.getLinks().stream()
-                .noneMatch(link -> link.getRel().value().equals("getTopTenHighestSalaryOfEmployees"))) {
-            employee.add(Link.of(ApiEndpoints.BASE_URL.getUrl() + "topTenHighestEarningEmployeeNames")
-                    .withRel("getTopTenHighestSalaryOfEmployees"));
-        }
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.hateoas.RepresentationModel;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Employee extends RepresentationModel<Employee> {
+public class Employee {
     @NotBlank
     private String id;
 

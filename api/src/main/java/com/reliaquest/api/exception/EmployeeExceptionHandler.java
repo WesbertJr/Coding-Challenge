@@ -53,6 +53,6 @@ public class EmployeeExceptionHandler {
 
         log.info(String.valueOf(errorMessages));
 
-        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 }

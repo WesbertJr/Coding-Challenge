@@ -68,7 +68,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<Employee> findByName(String name) {
         EmployeeData employees = cacheService.getEmployeeData();
         List<Employee> employeeList = employees.getData().stream()
-                .filter(employee -> employee.getName().contains(name))
+                .filter(employee -> employee.getName().toLowerCase().contains(name.toLowerCase()))
                 .toList();
 
         if (employeeList.isEmpty()) {
@@ -87,7 +87,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             Integer highestSalary = employees.stream()
                     .map(Employee::getSalary)
                     .max(Comparator.naturalOrder())
-                    .get();
+                    .orElse(0);
 
             log.info("fetched: {}", highestSalary);
 

@@ -1,24 +1,6 @@
 [
   {
     "id": "746f51a0-15da-44ba-bbba-c2489914d21d",
-    "links": [
-      {
-        "rel": "deleteById",
-        "href": "http://localhost:8111/api/v1/employee/746f51a0-15da-44ba-bbba-c2489914d21d"
-      },
-      {
-        "rel": "searchByName",
-        "href": "http://localhost:8111/api/v1/employee/search/Jennell"
-      },
-      {
-        "rel": "getEmployeeWithHighestSalary",
-        "href": "http://localhost:8111/api/v1/employee/highestSalary"
-      },
-      {
-        "rel": "getTopTenHighestSalaryOfEmployees",
-        "href": "http://localhost:8111/api/v1/employee/topTenHighestEarningEmployeeNames"
-      }
-    ],
     "employee_name": "Jennell Botsford III",
     "employee_salary": 73039,
     "employee_age": 40,
@@ -27,24 +9,6 @@
   },
   {
     "id": "c9a546a0-d231-4c19-9196-f3f77bf02397",
-    "links": [
-      {
-        "rel": "deleteById",
-        "href": "http://localhost:8111/api/v1/employee/c9a546a0-d231-4c19-9196-f3f77bf02397"
-      },
-      {
-        "rel": "searchByName",
-        "href": "http://localhost:8111/api/v1/employee/search/Maricruz"
-      },
-      {
-        "rel": "getEmployeeWithHighestSalary",
-        "href": "http://localhost:8111/api/v1/employee/highestSalary"
-      },
-      {
-        "rel": "getTopTenHighestSalaryOfEmployees",
-        "href": "http://localhost:8111/api/v1/employee/topTenHighestEarningEmployeeNames"
-      }
-    ],
     "employee_name": "Maricruz Toy",
     "employee_salary": 286301,
     "employee_age": 24,
@@ -53,24 +17,6 @@
   },
   {
     "id": "10417c4b-da26-4b10-80cd-bd62a3abb33a",
-    "links": [
-      {
-        "rel": "deleteById",
-        "href": "http://localhost:8111/api/v1/employee/10417c4b-da26-4b10-80cd-bd62a3abb33a"
-      },
-      {
-        "rel": "searchByName",
-        "href": "http://localhost:8111/api/v1/employee/search/Monique"
-      },
-      {
-        "rel": "getEmployeeWithHighestSalary",
-        "href": "http://localhost:8111/api/v1/employee/highestSalary"
-      },
-      {
-        "rel": "getTopTenHighestSalaryOfEmployees",
-        "href": "http://localhost:8111/api/v1/employee/topTenHighestEarningEmployeeNames"
-      }
-    ],
     "employee_name": "Monique Mackett",
     "employee_salary": 51410,
     "employee_age": 66,
@@ -79,24 +25,6 @@
   },
   {
     "id": "21c49561-a15f-468f-9c0b-a0bcc0cc561b",
-    "links": [
-      {
-        "rel": "deleteById",
-        "href": "http://localhost:8111/api/v1/employee/21c49561-a15f-468f-9c0b-a0bcc0cc561b"
-      },
-      {
-        "rel": "searchByName",
-        "href": "http://localhost:8111/api/v1/employee/search/Miss"
-      },
-      {
-        "rel": "getEmployeeWithHighestSalary",
-        "href": "http://localhost:8111/api/v1/employee/highestSalary"
-      },
-      {
-        "rel": "getTopTenHighestSalaryOfEmployees",
-        "href": "http://localhost:8111/api/v1/employee/topTenHighestEarningEmployeeNames"
-      }
-    ],
     "employee_name": "Miss Mack Bruen",
     "employee_salary": 151612,
     "employee_age": 37,
@@ -105,24 +33,6 @@
   },
   {
     "id": "04387121-b03a-4d2f-8f7a-3844cc3be51a",
-    "links": [
-      {
-        "rel": "deleteById",
-        "href": "http://localhost:8111/api/v1/employee/04387121-b03a-4d2f-8f7a-3844cc3be51a"
-      },
-      {
-        "rel": "searchByName",
-        "href": "http://localhost:8111/api/v1/employee/search/Tyree"
-      },
-      {
-        "rel": "getEmployeeWithHighestSalary",
-        "href": "http://localhost:8111/api/v1/employee/highestSalary"
-      },
-      {
-        "rel": "getTopTenHighestSalaryOfEmployees",
-        "href": "http://localhost:8111/api/v1/employee/topTenHighestEarningEmployeeNames"
-      }
-    ],
     "employee_name": "Tyree Kilback IV",
     "employee_salary": 344027,
     "employee_age": 39,
@@ -131,24 +41,6 @@
   },
   {
     "id": "ae2f5bbb-16d2-45e8-a60e-aa9e58f6d2d4",
-    "links": [
-      {
-        "rel": "deleteById",
-        "href": "http://localhost:8111/api/v1/employee/ae2f5bbb-16d2-45e8-a60e-aa9e58f6d2d4"
-      },
-      {
-        "rel": "searchByName",
-        "href": "http://localhost:8111/api/v1/employee/search/Ema"
-      },
-      {
-        "rel": "getEmployeeWithHighestSalary",
-        "href": "http://localhost:8111/api/v1/employee/highestSalary"
-      },
-      {
-        "rel": "getTopTenHighestSalaryOfEmployees",
-        "href": "http://localhost:8111/api/v1/employee/topTenHighestEarningEmployeeNames"
-      }
-    ],
     "employee_name": "Ema Thompson II",
     "employee_salary": 394420,
     "employee_age": 32,
@@ -156,3 +48,4 @@
     "employee_email": "wrapsafe@company.com"
   }
 ]
+

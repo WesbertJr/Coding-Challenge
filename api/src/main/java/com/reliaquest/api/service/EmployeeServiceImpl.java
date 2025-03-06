@@ -118,6 +118,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @CacheEvict(value = "employees", allEntries = true)
     public Employee create(EmployeeRequest request) {
+        ObjectNode json = mapper.createObjectNode();
+        json.put("name", request.getName());
+        json.put("salary", request.getSalary());
+        json.put("title", request.getTitle());
+        json.put("age", request.getAge());
+
         EmployeeData employees = cacheService.getEmployeeData();
         Optional<Employee> employeeOpt = employees.getData().stream()
                 .filter(e -> Objects.equals(e.getName(), request.getName()))
@@ -132,7 +138,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     .method(HttpMethod.POST)
                     .uri("/employee")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(request)
+                    .body(json)
                     .retrieve()
                     .body(String.class);
 

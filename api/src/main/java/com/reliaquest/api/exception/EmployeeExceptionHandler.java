@@ -34,11 +34,11 @@ public class EmployeeExceptionHandler {
         Error apiError = new Error(
                 request.getRequestURI(),
                 Collections.singletonList(e.getMessage()),
-                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_ACCEPTABLE.value(),
                 LocalDateTime.now());
         log.info(e.getMessage());
 
-        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(apiError, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

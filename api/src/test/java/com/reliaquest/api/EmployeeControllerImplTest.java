@@ -7,26 +7,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.reliaquest.api.controller.EmployeControllerImpl;
 import com.reliaquest.api.dto.Employee;
 import com.reliaquest.api.dto.EmployeeRequest;
 import com.reliaquest.api.exception.EmployeeException;
 import com.reliaquest.api.exception.EmployeeNotFoundException;
+import com.reliaquest.api.service.EmployeeCacheService;
 import com.reliaquest.api.service.EmployeeServiceImpl;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @AutoConfigureMockMvc
-@SpringBootTest
+@WebMvcTest(EmployeControllerImpl.class)
 public class EmployeeControllerImplTest {
     private static final String API_END_POINT = "/api/v1/employee";
 
@@ -36,8 +42,11 @@ public class EmployeeControllerImplTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    @Autowired
+    @MockBean
     EmployeeServiceImpl employeeService;
+
+    @MockBean
+    EmployeeCacheService cacheService;
 
     List<Employee> employees;
 
@@ -70,7 +79,7 @@ public class EmployeeControllerImplTest {
         List<Employee> filteredEmployees =
                 employees.stream().filter(e -> e.getName().contains(name)).toList();
         String expectedResponse = objectMapper.writeValueAsString(filteredEmployees);
-        Mockito.when(employeeService.findAll()).thenReturn(filteredEmployees);
+        Mockito.when(employeeService.findByName(name)).thenReturn(filteredEmployees);
 
         ResultActions resultActions = mockMvc.perform(get(API_END_POINT + "/search/" + name))
                 .andExpect(status().isOk())
@@ -87,7 +96,7 @@ public class EmployeeControllerImplTest {
         List<Employee> filteredEmployees =
                 employees.stream().filter(e -> e.getName().contains(name)).toList();
         String expectedResponse = objectMapper.writeValueAsString(filteredEmployees);
-        Mockito.when(employeeService.findAll()).thenReturn(filteredEmployees);
+        Mockito.when(employeeService.findByName(name)).thenReturn(filteredEmployees);
 
         ResultActions resultActions = mockMvc.perform(get(API_END_POINT + "/search/" + name))
                 .andExpect(status().isOk())
@@ -103,7 +112,7 @@ public class EmployeeControllerImplTest {
         String name = "William";
         List<Employee> filteredEmployees =
                 employees.stream().filter(e -> e.getName().contains(name)).toList();
-        Mockito.when(employeeService.findAll()).thenReturn(filteredEmployees);
+        Mockito.when(employeeService.findByName(name)).thenThrow(new EmployeeNotFoundException(name));
 
         mockMvc.perform(get(API_END_POINT + "/search/" + name))
                 .andExpect(status().isNotFound())
@@ -135,6 +144,7 @@ public class EmployeeControllerImplTest {
     @Test
     public void testGetEmployeeById_WithInValidId_ShouldThrowEmployeeNotFoundException() throws Exception {
         String id = "6b79d4a0-262e-4206-8c2b-c01222123";
+        Mockito.when(employeeService.findById(id)).thenThrow(new EmployeeNotFoundException(id));
 
         mockMvc.perform(get(API_END_POINT + "/" + id))
                 .andExpect(status().isNotFound())
@@ -161,11 +171,10 @@ public class EmployeeControllerImplTest {
 
     @Test
     public void testGetHighestSalaryOfEmployees_ShouldThrowEmployeeException() throws Exception {
-        List<String> empytEmployeeList = new ArrayList<>();
-        Mockito.when(employeeService.getHighestSalaryOfEmployees()).thenReturn(null);
+        Mockito.when(employeeService.getHighestSalaryOfEmployees()).thenThrow(new EmployeeException("Employee list is empty"));
 
         mockMvc.perform(get(API_END_POINT + "/highestSalary"))
-                .andExpect(status().isNotFound())
+                .andExpect(status().isNotAcceptable())
                 .andExpect(result -> {
                     Exception exception = result.getResolvedException();
                     assertNotNull(exception);
@@ -176,12 +185,12 @@ public class EmployeeControllerImplTest {
 
     @Test
     public void testGetTopTenHighestEarningEmployee_ShouldReturnStatusOK() throws Exception {
-        Mockito.when(employeeService.findAll()).thenReturn(employees);
         List<String> highestEarners = employeeService.findAll().stream()
                 .sorted(Comparator.comparing(Employee::getSalary).reversed())
                 .limit(10)
                 .map(Employee::getName)
                 .toList();
+        Mockito.when(employeeService.findTopTenHighestEarningEmployeeNames()).thenReturn(highestEarners);
         String expectedResponse = objectMapper.writeValueAsString(highestEarners);
 
         mockMvc.perform(get(API_END_POINT + "/topTenHighestEarningEmployeeNames"))
@@ -191,44 +200,21 @@ public class EmployeeControllerImplTest {
     }
 
     @Test
-    public void testCreateEmployee_ShouldReturnThrowMethodArgumentNotValidException() throws Exception {
+    public void testCreateEmployee_ShouldReturnEmployeeException() throws Exception {
         Employee employee = employees.get(1);
-        Mockito.when(employeeService.findAll()).thenReturn(employees);
-        String expectedJson = objectMapper.writeValueAsString(employee);
+        String expectedEmployee  = objectMapper.writeValueAsString(employee);
+        EmployeeRequest request = objectMapper.readValue(expectedEmployee, EmployeeRequest.class);
+        Mockito.when(employeeService.create(request)).thenThrow(new EmployeeException("Employee already exists"));
 
-        EmployeeRequest employeeRequest = objectMapper.readValue(expectedJson, EmployeeRequest.class);
-        String requestJson = objectMapper.writeValueAsString(employeeRequest);
-
-        System.out.println(expectedJson);
+        String requestJson = objectMapper.writeValueAsString(request);
 
         mockMvc.perform(post(API_END_POINT).content(requestJson).contentType("application/json"))
-                .andExpect(status().isAlreadyReported())
-                .andExpect(content().contentTypeCompatibleWith("application/hal+json"))
-                .andExpect(jsonPath("$.id").value(employee.getId()))
-                .andExpect(jsonPath("$.employee_name").value(employee.getName()))
-                .andExpect(jsonPath("$.employee_title").value(employee.getTitle()))
-                .andExpect(jsonPath("$.employee_salary").value(employee.getSalary()))
-                .andDo(print());
-    }
-
-    @Test
-    public void testCreateEmployee_ShouldReturnAlreadyReportedStatus() throws Exception {
-        Employee employee = employees.get(1);
-        Mockito.when(employeeService.findAll()).thenReturn(employees);
-        String expectedJson = objectMapper.writeValueAsString(employee);
-
-        EmployeeRequest employeeRequest = objectMapper.readValue(expectedJson, EmployeeRequest.class);
-        String requestJson = objectMapper.writeValueAsString(employeeRequest);
-
-        System.out.println(expectedJson);
-
-        mockMvc.perform(post(API_END_POINT).content(requestJson).contentType("application/json"))
-                .andExpect(status().isAlreadyReported())
-                .andExpect(content().contentTypeCompatibleWith("application/hal+json"))
-                .andExpect(jsonPath("$.id").value(employee.getId()))
-                .andExpect(jsonPath("$.employee_name").value(employee.getName()))
-                .andExpect(jsonPath("$.employee_title").value(employee.getTitle()))
-                .andExpect(jsonPath("$.employee_salary").value(employee.getSalary()))
+                .andExpect(status().isNotAcceptable())
+                .andExpect(result -> {
+                    Exception exception = result.getResolvedException();
+                    assertNotNull(exception);
+                    assertInstanceOf(EmployeeException.class, exception);
+                })
                 .andDo(print());
     }
 
@@ -253,7 +239,7 @@ public class EmployeeControllerImplTest {
 
         mockMvc.perform(post(API_END_POINT).content(requestJson).contentType("application/json"))
                 .andExpect(status().isCreated())
-                .andExpect(content().contentTypeCompatibleWith("application/hal+json"))
+                .andExpect(content().contentTypeCompatibleWith("application/json"))
                 .andExpect(jsonPath("$.id").value(createdEmployee.getId()))
                 .andExpect(jsonPath("$.employee_name").value("William"))
                 .andDo(print());
@@ -275,7 +261,7 @@ public class EmployeeControllerImplTest {
     @Test
     public void testDeleteEmployeeById_ShouldThrowEmployeeNotFoundException() throws Exception {
         String invalidID = UUID.randomUUID().toString();
-        Mockito.when(employeeService.findAll()).thenReturn(employees);
+        Mockito.when(employeeService.delete(invalidID)).thenThrow(new EmployeeNotFoundException(invalidID));
 
         mockMvc.perform(delete(API_END_POINT + "/" + invalidID))
                 .andExpect(status().isNotFound())

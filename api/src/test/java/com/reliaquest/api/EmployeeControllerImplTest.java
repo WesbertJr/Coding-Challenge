@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.reliaquest.api.controller.EmployeControllerImpl;
 import com.reliaquest.api.dto.Employee;
 import com.reliaquest.api.dto.EmployeeRequest;
 import com.reliaquest.api.exception.EmployeeException;
@@ -22,13 +21,12 @@ import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 @AutoConfigureMockMvc
-@WebMvcTest(EmployeControllerImpl.class)
+@SpringBootTest
 public class EmployeeControllerImplTest {
     private static final String API_END_POINT = "/api/v1/employee";
 
@@ -38,7 +36,7 @@ public class EmployeeControllerImplTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    @MockBean
+    @Autowired
     EmployeeServiceImpl employeeService;
 
     List<Employee> employees;
@@ -150,11 +148,10 @@ public class EmployeeControllerImplTest {
 
     @Test
     public void testGetHighestSalaryOfEmployees_ShouldReturnStatusOK() throws Exception {
-        Integer highestSalary = employees.stream()
+        Integer highestSalary = employeeService.findAll().stream()
                 .map(Employee::getSalary)
                 .max(Comparator.naturalOrder())
                 .orElse(0);
-        Mockito.when(employeeService.findAll()).thenReturn(employees);
 
         mockMvc.perform(get(API_END_POINT + "/highestSalary"))
                 .andExpect(status().isOk())
@@ -164,8 +161,8 @@ public class EmployeeControllerImplTest {
 
     @Test
     public void testGetHighestSalaryOfEmployees_ShouldThrowEmployeeException() throws Exception {
-        List<Employee> empytEmployeeList = new ArrayList<>();
-        Mockito.when(employeeService.findAll()).thenReturn(empytEmployeeList);
+        List<String> empytEmployeeList = new ArrayList<>();
+        Mockito.when(employeeService.getHighestSalaryOfEmployees()).thenReturn(null);
 
         mockMvc.perform(get(API_END_POINT + "/highestSalary"))
                 .andExpect(status().isNotFound())
@@ -266,7 +263,7 @@ public class EmployeeControllerImplTest {
     public void testDeleteEmployeeById_ShouldReturnsStatusAccepted() throws Exception {
         Employee employee = employees.get(1);
         String expectedResponse = "Employee " + employee.getName() + " Deleted Successfully!";
-        Mockito.when(employeeService.delete(employee)).thenReturn(expectedResponse);
+        Mockito.when(employeeService.delete(employee.getId())).thenReturn(expectedResponse);
         Mockito.when(employeeService.findAll()).thenReturn(employees);
 
         mockMvc.perform(delete(API_END_POINT + "/" + employee.getId()))

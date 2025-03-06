@@ -8,9 +8,15 @@ public interface EmployeeService {
 
     Employee create(EmployeeRequest request);
 
-    String delete(Employee employee);
+    String delete(String id);
 
     List<Employee> findAll();
 
     Employee findById(String id);
+
+    List<Employee> findByName(String name);
+
+    List<String> findTopTenHighestEarningEmployeeNames();
+
+    Integer getHighestSalaryOfEmployees();
 }

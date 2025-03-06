@@ -19,17 +19,14 @@ import java.io.IOException;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @AutoConfigureMockMvc
 @WebMvcTest(EmployeControllerImpl.class)
@@ -171,7 +168,8 @@ public class EmployeeControllerImplTest {
 
     @Test
     public void testGetHighestSalaryOfEmployees_ShouldThrowEmployeeException() throws Exception {
-        Mockito.when(employeeService.getHighestSalaryOfEmployees()).thenThrow(new EmployeeException("Employee list is empty"));
+        Mockito.when(employeeService.getHighestSalaryOfEmployees())
+                .thenThrow(new EmployeeException("Employee list is empty"));
 
         mockMvc.perform(get(API_END_POINT + "/highestSalary"))
                 .andExpect(status().isNotAcceptable())
@@ -202,7 +200,7 @@ public class EmployeeControllerImplTest {
     @Test
     public void testCreateEmployee_ShouldReturnEmployeeException() throws Exception {
         Employee employee = employees.get(1);
-        String expectedEmployee  = objectMapper.writeValueAsString(employee);
+        String expectedEmployee = objectMapper.writeValueAsString(employee);
         EmployeeRequest request = objectMapper.readValue(expectedEmployee, EmployeeRequest.class);
         Mockito.when(employeeService.create(request)).thenThrow(new EmployeeException("Employee already exists"));
 

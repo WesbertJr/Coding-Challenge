@@ -83,7 +83,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Integer getHighestSalaryOfEmployees() {
         List<Employee> employees = cacheService.getEmployeeData().getData();
-        try{
+        try {
             Integer highestSalary = employees.stream()
                     .map(Employee::getSalary)
                     .max(Comparator.naturalOrder())
@@ -92,11 +92,9 @@ public class EmployeeServiceImpl implements EmployeeService {
             log.info("fetched: {}", highestSalary);
 
             return highestSalary;
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             throw new EmployeeException("Unable to fetch highest salary of employees: " + e.getMessage());
         }
-
     }
 
     @Override
@@ -113,7 +111,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         return topTen;
     }
-
 
     @Override
     @CacheEvict(value = "employees", allEntries = true)
@@ -152,7 +149,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @CacheEvict(value = "employees", allEntries = true)
     public String delete(String id) {
-        Employee employee = cacheService.getEmployeeData().getData().stream().filter(e -> Objects.equals(e.getId(), id)).findFirst().orElseThrow(() -> new EmployeeNotFoundException(id));
+        Employee employee = cacheService.getEmployeeData().getData().stream()
+                .filter(e -> Objects.equals(e.getId(), id))
+                .findFirst()
+                .orElseThrow(() -> new EmployeeNotFoundException(id));
 
         ObjectNode json = mapper.createObjectNode();
         json.put("name", employee.getName());
@@ -171,5 +171,4 @@ public class EmployeeServiceImpl implements EmployeeService {
             return "Failed to delete Employee: " + employee.getName();
         }
     }
-
 }

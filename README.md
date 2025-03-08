@@ -1,4 +1,4 @@
-# ReliaQuest Coding Challenge
+# Coding Challenge
 
 #### In this assessment you will be tasked with filling out the functionality of different methods that will be listed further down.
 
@@ -14,7 +14,6 @@ See the section **How to Run Mock Employee API** for further instruction on star
 
 ### Endpoints to implement (API module)
 
-_See `com.reliaquest.api.controller.IEmployeeController` for details._
 
 getAllEmployees()
 
